@@ -1,45 +1,35 @@
 print('program begins')
 import numpy as np
 import matplotlib.pyplot as plt
-import sympy as sy
-from sympy.functions import exp
-
-"""
-def Gauss_Legendre_exponential(N):
-    a=np.zeros(N)
-    a[-1]=1
-    roots=np.polynomial.legendre.legroots(a)
-    sorted_roots=np.sort(roots)
-    func_values=np.exp(sorted_roots)
-    n_list=np.linspace(0,N,N)
-    legendre_list=np.zeros(N)
-    index=0
-    for i in n_list:
-        legendre_list[index]=sy.special.legendre(i)
-        index+=1
-    for j in legendre_list:
-        j()
-
-    return 0
-"""
-
-def MonteCarloNormal(N):
-
-    points=np.random.uniform(0,2,(N,6))
-    func_values=np.exp(points)
-    mean_value=np.mean(func_values)
-    standard_dev=np.sqrt(np.sum(func_values-mean_value)**2 /N)
-    return mean_value,standard_dev
-
-def MonteCarloExponential(N):
-
-    points=np.random.uniform(0,2,N)
-    func_values=np.exp(points)
-    mean_value=np.mean(func_values)
-    standard_dev=np.sqrt(np.sum(func_values-mean_value)**2 /N)
-    return mean_value,standard_dev
 
 
-mean_value,standard_deviation=MonteCarloNormal(1000000)
-print(2*mean_value)
-print(standard_deviation)
+def function(x):
+    #alpha = 2
+    #return np.exp(-2*alpha*x)
+    return 3*x**4
+
+def Gauss_leg(n):
+    L_N = np.zeros(n+1)
+    L_N[-1] = 1
+    xi = np.polynomial.legendre.legroots(L_N)
+
+    p1 = 1
+    p2 = 0
+    for j in range(1,n+1):
+        p3 = p2
+        p2 = p1
+        p1 = ((2*j-1)*xi*p2 - (j-1)*p3)/j
+
+    pp = n*(xi*p1-p2)/(xi**2-1)
+    w = 2/((1-xi**2)*pp**2)
+
+    return xi, w
+
+if __name__ == '__main__':
+    n = 3
+    xi, w = Gauss_leg(n)
+
+    Leg_I = 0
+    for i in range(n):
+        Leg_I += w[i]*function(xi[i])
+    print(Leg_I)
