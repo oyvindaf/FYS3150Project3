@@ -23,7 +23,6 @@ def MonteCarloNormal(N,lmbda):
     a=-lmbda
     b= lmbda
 
-    A = np.ones(N)*a
 
     x1 = np.random.uniform(0,1,N)*(b-a) + a
     y1 = np.random.uniform(0,1,N)*(b-a) + a
