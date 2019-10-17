@@ -23,7 +23,7 @@ def integrand(a, b, x1, x2, y1, y2, z1, z2):
         I = 0
     return I
 
-def Gauss_leg_numpy(n):
+def Gauss_leg(n):
     L_N = np.zeros(n+1)
     L_N[-1] = 1
     xi = np.polynomial.legendre.legroots(L_N)
