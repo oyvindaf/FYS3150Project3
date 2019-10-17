@@ -3,11 +3,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def function(a, b, x):
-    #alpha = 2
-    #return np.exp(-2*alpha*x)
-    t = (b-a)*x/2 + (b+a)/2
-    return np.exp(-2*t)
+def integrand(a, b, x1, x2, y1, y2, z1, z2):
+    tol = 1e-10
+    x1 = (b-a)*x1/2 + (b+a)/2
+    x2 = (b-a)*x2/2 + (b+a)/2
+    y1 = (b-a)*y1/2 + (b+a)/2
+    y2 = (b-a)*y2/2 + (b+a)/2
+    z1 = (b-a)*z1/2 + (b+a)/2
+    z2 = (b-a)*z2/2 + (b+a)/2
+
+    r1 = np.sqrt(x1**2+y1**2+z1**2)
+    r2 = np.sqrt(x2**2+y2**2+z2**2)
+
+    distance = np.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2))
+
+    if distance > 0:
+        I = np.exp(-4*(r1+r2))/distance
+    else:
+        I = 0
+    return I
 
 def Gauss_leg(n):
     L_N = np.zeros(n+1)
@@ -16,38 +30,50 @@ def Gauss_leg(n):
 
     p1 = 1
     p2 = 0
-    for j in range(1,n+1):
+    for j in range(n):
         p3 = p2
         p2 = p1
-        p1 = ((2*j-1)*xi*p2 - (j-1)*p3)/j
+        p1 = ((2*j+1)*xi*p2 - j*p3)/(j+1)
 
     pp = n*(xi*p1-p2)/(xi**2-1)
     w = 2/((1-xi**2)*pp**2)
 
     return xi, w
 
-def Test_monte1d(b, a, n):
-    x = np.random.uniform(a,b,n)
-    fx = function(x)
-    crude_mc = sum(fx)
-    sigma = sum(fx*fx)
+def Gauss_lag(n):
+    L_N = np.zeros(n+1)
+    L_N[-1] = 1
+    xi = np.polynomial.laguerre.lagroots(L_N)
 
-    integral = crude_mc*(b-a)/n
-    return integral, sigma
+    p1 = 1
+    p2 = 0
+    for j in range(n+1):
+        p3 = p2
+        p2 = p1
+        p1 = ((2*j+1-xi)*p2 - j*p3)/(j+1)
+
+    w = xi/((n+1)**2*p1**2)
+
+    return xi, w
 
 if __name__ == '__main__':
-    n = 100
+    n = 15
     lamb = 3
     xi, w = Gauss_leg(n)
-    xi_new = np.tan(np.pi/4*(1+xi))
-    w_new = np.pi/4*w/(np.cos(np.pi/4*(1+xi))**2)
 
+    #  xi_new = np.tan(np.pi/4*(1+xi))
+    #  w_new = np.pi/4*w/(np.cos(np.pi/4*(1+xi))**2)
 
-    start = -lamb; end = lamb
+    a = -lamb
+    b = lamb
     Leg_I = 0
     for i in range(n):
-        Leg_I += w[i]*function(start, end, xi[i])
-    Leg_I *= (end-start)/2
-    print(Leg_I)
-
-    #print(Test_monte1d(2, 0, 1000000))
+        for j in range(n):
+            for k in range(n):
+                for l in range(n):
+                    for m in range(n):
+                        for h in range(n):
+                            Leg_I += w[i]*w[j]*w[k]*w[l]*w[m]*w[h]*integrand(a, b, xi[i], xi[j], xi[k], xi[l], xi[m], xi[h])
+        print(i)
+    Leg_I *= ((b-a)/2)**6
+    print(Leg_I, 5*np.pi**2/16**2)
