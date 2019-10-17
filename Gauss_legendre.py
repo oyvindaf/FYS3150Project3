@@ -17,13 +17,13 @@ def integrand(a, b, x1, x2, y1, y2, z1, z2):
 
     distance = np.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2) + (z1-z2)*(z1-z2))
 
-    if distance > 0:
+    if distance > tol:
         I = np.exp(-4*(r1+r2))/distance
     else:
         I = 0
     return I
 
-def Gauss_leg(n):
+def Gauss_leg_numpy(n):
     L_N = np.zeros(n+1)
     L_N[-1] = 1
     xi = np.polynomial.legendre.legroots(L_N)
@@ -57,23 +57,35 @@ def Gauss_lag(n):
     return xi, w
 
 if __name__ == '__main__':
-    n = 15
+    n = np.linspace(3,15,7)
+    Leg_I = np.zeros(len(n))
     lamb = 3
-    xi, w = Gauss_leg(n)
 
-    #  xi_new = np.tan(np.pi/4*(1+xi))
-    #  w_new = np.pi/4*w/(np.cos(np.pi/4*(1+xi))**2)
+    '''
+    for g in range(len(n)):
+        N = int(n[g])
+        xi, w = Gauss_leg(N)
 
-    a = -lamb
-    b = lamb
-    Leg_I = 0
-    for i in range(n):
-        for j in range(n):
-            for k in range(n):
-                for l in range(n):
-                    for m in range(n):
-                        for h in range(n):
-                            Leg_I += w[i]*w[j]*w[k]*w[l]*w[m]*w[h]*integrand(a, b, xi[i], xi[j], xi[k], xi[l], xi[m], xi[h])
-        print(i)
-    Leg_I *= ((b-a)/2)**6
+        #  xi_new = np.tan(np.pi/4*(1+xi))
+        #  w_new = np.pi/4*w/(np.cos(np.pi/4*(1+xi))**2)
+
+        a = -lamb
+        b = lamb
+
+        for i in range(N):
+            for j in range(N):
+                for k in range(N):
+                    for l in range(N):
+                        for m in range(N):
+                            for h in range(N):
+                                Leg_I[g] += w[i]*w[j]*w[k]*w[l]*w[m]*w[h]*integrand(a, b, xi[i], xi[j], xi[k], xi[l], xi[m], xi[h])
+            print(i)
+        Leg_I[g] *= ((b-a)/2)**6
+
     print(Leg_I, 5*np.pi**2/16**2)
+    plt.plot(n, Leg_I)
+    plt.show()
+    '''
+
+    xi, wi = Gauss_lag(5)
+    print(xi, wi)
