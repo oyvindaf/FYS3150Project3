@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 def integrand(a, b, x1, x2, y1, y2, z1, z2):
-    tol = 1e-14
+    tol = 1e-10
     x1 = (b-a)*x1/2 + (b+a)/2
     x2 = (b-a)*x2/2 + (b+a)/2
     y1 = (b-a)*y1/2 + (b+a)/2
@@ -24,7 +24,7 @@ def integrand(a, b, x1, x2, y1, y2, z1, z2):
     return I
 
 def polar_integrand(a1, b1, a2, b2, r1, r2, t1, t2, p1, p2):
-    tol = 1e-14
+    tol = 1e-10
 
     t1 = (b1 - a1) * t1 / 2 + (b1 + a1) / 2
     t2 = (b1 - a1) * t2 / 2 + (b1 + a1) / 2
@@ -116,6 +116,7 @@ if __name__ == '__main__':
     for g in range(len(n)):
         N = int(n[g])
         ri, w_ri = Gauss_lag(N)
+        print(N, ri, w_ri)
         anglei, w_anglei = Gauss_leg(N)
 
         for i in range(N):
