@@ -1,6 +1,7 @@
 print('program begins')
 import numpy as np
 import matplotlib.pyplot as plt
+import time
 
 
 def integrand(a, b, x1, x2, y1, y2, z1, z2):
@@ -26,17 +27,17 @@ def integrand(a, b, x1, x2, y1, y2, z1, z2):
 def polar_integrand(a1, b1, a2, b2, r1, r2, t1, t2, p1, p2):
     tol = 1e-10
 
-    t1 = (b1 - a1) * t1 / 2 + (b1 + a1) / 2
-    t2 = (b1 - a1) * t2 / 2 + (b1 + a1) / 2
-    p1 = (b2 - a2) * p1 / 2 + (b2 + a2) / 2
-    p2 = (b2 - a2) * p2 / 2 + (b2 + a2) / 2
+    t1 = (b1-a1)*t1/2 + (b1+a1)/2
+    t2 = (b1-a1)*t2/2 + (b1+a1)/2
+    p1 = (b2-a2)*p1/2 + (b2+a2)/2
+    p2 = (b2-a2)*p2/2 + (b2+a2)/2
 
     cosb = np.cos(t1)*np.cos(t2) + np.sin(t1)*np.sin(t2)*np.cos(p1-p2)
 
-    r12 = np.sqrt(r1**2+r2**2-2*r1*r2*cosb)
+    r12 = r1**2+r2**2-2*r1*r2*cosb
 
     if r12 > tol:
-        I = np.exp(-4*(r1+r2))*r1**2*r2**2*np.sin(t1)*np.sin(t2)/r12
+        I = np.exp(-3*(r1+r2))*r1**2*r2**2*np.sin(t1)*np.sin(t2)/np.sqrt(r12)
     else:
         I = 0
     return I
@@ -77,21 +78,19 @@ def Gauss_lag(n):
     return xi, w
 
 if __name__ == '__main__':
-    n = np.linspace(3,9,4)
+    n = np.linspace(3,21,10)
     Leg_I = np.zeros(len(n))
     lamb = 3
+    time_spent_leg = np.zeros(len(n))
 
 
     for g in range(len(n)):
         N = int(n[g])
         xi, w = Gauss_leg(N)
 
-        #  xi_new = np.tan(np.pi/4*(1+xi))
-        #  w_new = np.pi/4*w/(np.cos(np.pi/4*(1+xi))**2)
-
         a = -lamb
         b = lamb
-
+        start = time.time()
         for i in range(N):
             for j in range(N):
                 for k in range(N):
@@ -99,36 +98,48 @@ if __name__ == '__main__':
                         for m in range(N):
                             for h in range(N):
                                 Leg_I[g] += w[i]*w[j]*w[k]*w[l]*w[m]*w[h]*integrand(a, b, xi[i], xi[j], xi[k], xi[l], xi[m], xi[h])
-            print(i)
+            print((i+1)/N*100)
         Leg_I[g] *= ((b-a)/2)**6
+        end = time.time()
+        time_spent_leg[g] = end-start
 
     print(Leg_I, 5*np.pi**2/16**2)
-    plt.plot(n, Leg_I)
-    plt.show()
+    plt.plot(n, Leg_I, 'bo-', label='Gauss Legendre for Cartesian')
 
 
-    # laguerre part
+    #  Laguerre part
 
     Lag_I = np.zeros(len(n))
     at = 0; bt = np.pi
     ap = 0; bp = 2 * np.pi
+    time_spent_lag = np.zeros(len(n))
 
     for g in range(len(n)):
         N = int(n[g])
         ri, w_ri = Gauss_lag(N)
         print(N, ri, w_ri)
-        anglei, w_anglei = Gauss_leg(N)
+        angle, w_angle = Gauss_leg(N)
 
+        start = time.time()
         for i in range(N):
             for j in range(N):
                 for k in range(N):
                     for l in range(N):
                         for m in range(N):
                             for h in range(N):
-                                Lag_I[g] += w_ri[i] * w_ri[j] * w_anglei[k] * w_anglei[l] * w_anglei[m] * w_anglei[h] \
-                                        * polar_integrand(at, bt, ap, bp, ri[i], ri[j], anglei[k], anglei[l], anglei[m], anglei[h])
-            print(i)
+                                Lag_I[g] += w_ri[i] * w_ri[j] * w_angle[k] * w_angle[l] * w_angle[m] * w_angle[h] \
+                                        * polar_integrand(at, bt, ap, bp, ri[i], ri[j], angle[k], angle[l], angle[m], angle[h])
+            print((i+1)/N*100)
         Lag_I[g] *= ((bt - at) / 2) ** 2 * ((bp - ap)/2)**2
-    print(Lag_I)
-    plt.plot(n, Lag_I)
+        end = time.time()
+        time_spent_lag[g] = end-start
+
+    plt.plot(n, Lag_I, 'ro-', label='Gauss Laguerre for radial')
+    plt.axhline(y=5*np.pi**2/16**2)
+    plt.xlabel('mesh points, N')
+    plt.ylabel('integration value')
     plt.show()
+
+    print(n)
+    print(time_spent_leg)
+    print(time_spent_lag)
