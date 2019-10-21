@@ -2,7 +2,7 @@ print('program begins')
 import numpy as np
 import matplotlib.pyplot as plt
 import time
-
+from numba import jit
 
 def integrand(a, b, x1, x2, y1, y2, z1, z2):
     tol = 1e-10
@@ -78,7 +78,8 @@ def Gauss_lag(n):
     return xi, w
 
 if __name__ == '__main__':
-    n = np.linspace(3,21,10)
+    n = np.linspace(3,25,12)
+    #n = np.linspace(3,7,3)
     Leg_I = np.zeros(len(n))
     lamb = 3
     time_spent_leg = np.zeros(len(n))
@@ -138,8 +139,14 @@ if __name__ == '__main__':
     plt.axhline(y=5*np.pi**2/16**2)
     plt.xlabel('mesh points, N')
     plt.ylabel('integration value')
+    plt.legend()
     plt.show()
 
+    file = open('solution_GQ.txt', 'w')
+
+    for i in range(len(n)):
+        file.write('N=%g, Gauss_leg = %g, time = %g, Gauss_lag = %g, time = %g \n' % (n[i], Leg_I[i], time_spent_leg[i],
+                                                                                      Lag_I[i], time_spent_lag[i]))
     print(n)
     print(time_spent_leg)
     print(time_spent_lag)
