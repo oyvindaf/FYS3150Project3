@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import multiprocessing as mp
+import time
 """
 def spherical_function(r1,r2,theta1,theta2,phi1,phi2,N):
     alpha=2
@@ -44,18 +45,22 @@ def MonteCarlo(N):
     integral= crude_mc*(4*np.pi**4 )/16 #accomodating for 6D spherical
 
     return integral
-
-integral=MonteCarlo(1099001)
+start=time.time()
+integral=MonteCarlo(100_00_00_0)
+end=time.time()
 exact=(5*np.pi**2)/16**2
 print("Computed integral: {:.3f}".format(integral))
+print("Time to compute integral: {}".format(end-start))
 print("Exact Integral: {:.3f} ".format(exact))
 
-N=1000
-N_list=np.full(100,N)
+N=100_0
+N_list=np.full(100_00,N)
 def main():
     pool = mp.Pool(mp.cpu_count())
     result = pool.map( MonteCarlo, N_list )
-    print(np.array(result))
-    print("Integral calculated using parallelization: {:.3f}".format(np.mean(np.array(result))))
-
+#    print(np.array(result))
+    print("Integral calculated using parallelization: {:.3f}".format(np.mean(result)))
+start2=time.time()
 main()
+end2=time.time()
+print("Time to compute parallell integral: {}".format(end2-start2))
