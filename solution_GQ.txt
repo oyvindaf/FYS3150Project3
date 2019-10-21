@@ -1,0 +1,12 @@
+N=3, Gauss_leg = 0.108672, time = 0.0209451, Gauss_lag = 0.276857, time = 0.0139606 
+N=5, Gauss_leg = 0.264249, time = 0.499662, Gauss_lag = 0.170492, time = 0.31316 
+N=7, Gauss_leg = 0.329525, time = 3.03887, Gauss_lag = 0.154422, time = 2.34251 
+N=9, Gauss_leg = 0.321518, time = 12.4357, Gauss_lag = 0.169505, time = 10.4558 
+N=11, Gauss_leg = 0.291261, time = 47.9585, Gauss_lag = 0.183022, time = 35.6265 
+N=13, Gauss_leg = 0.261821, time = 116.628, Gauss_lag = 0.190218, time = 95.9022 
+N=15, Gauss_leg = 0.239088, time = 265.02, Gauss_lag = 0.193285, time = 235.989 
+N=17, Gauss_leg = 0.222933, time = 574.5, Gauss_lag = 0.194396, time = 512.491 
+N=19, Gauss_leg = 0.211832, time = 1120.19, Gauss_lag = 0.194732, time = 962.119 
+N=21, Gauss_leg = 0.204307, time = 1898.89, Gauss_lag = 0.194807, time = 1684.94 
+N=23, Gauss_leg = 0.199232, time = 2654.37, Gauss_lag = 0.194812, time = 3203.78 
+N=25, Gauss_leg = 0.195817, time = 4542.21, Gauss_lag = 0.194804, time = 4877.9 
