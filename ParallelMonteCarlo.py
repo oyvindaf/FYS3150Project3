@@ -49,26 +49,115 @@ def MonteCarlo(N):
     integral= crude_mc*(4*np.pi**4 )/16 #accomodating for 6D spherical
 
     return integral, variance
-start=time.time()
-integral,variance=MonteCarlo(1_00_00_00_0)
-end=time.time()
-exact=(5*np.pi**2)/16**2
-print("Computed integral: {:.3f}".format(integral))
-print("Variance: {}".format(variance))
-print("Time to compute integral: {:.3f}".format(end-start))
-print("Exact Integral: {:.3f} ".format(exact))
 
-N=1_00_0
-N_list=np.full(1_00_00,N)
+def main(N):
+    """Distributing the work over the processors """
+    N_list=np.full(int(np.sqrt(N)),int(np.sqrt(N)))
 
-def main():
     number_of_processors=mp.cpu_count()
+
     pool = mp.Pool(number_of_processors)
+
     result= np.array(pool.map( MonteCarlo, N_list ))
     result_int,result_var=result.T
-    print("Integral calculated using parallelization: {:.3f}".format(np.mean(result_int)))
-    print("Variance calculated using parallelization: {}".format(np.mean(result_var)))
-start2=time.time()
-main()
-end2=time.time()
-print("Time to compute parallell integral: {:.3f}".format(end2-start2))
+#    print("Integral calculated using parallelization: {:.3f}".format(np.mean(result_int)))
+#    print("Variance calculated using parallelization: {}".format(np.mean(result_var)))
+    return np.mean(result_int), np.mean(result_var)
+
+integral_list=[]
+variance_list=[]
+parallell_int_list=[]
+parallell_var_list=[]
+normal_time_list=[]
+parallell_time_list=[]
+N_iteration_list = np.array([1_00,1_00_0,1_00_00,1_00_00_0,1_00_00_00,1_00_00_00_0])
+
+
+iterations=1
+for N in N_iteration_list:
+
+    start=time.time()
+    integral,variance=MonteCarlo(N)
+    end=time.time()
+    print("time not parallell {}".format(end-start))
+
+    start2=time.time()
+    parallell_int, parallell_var = main(N)
+    end2=time.time()
+    print("time parallell {}".format(end2-start2))
+
+    integral_list.append(integral)
+    variance_list.append(variance)
+    normal_time_list.append(end-start)
+
+    parallell_int_list.append(parallell_int)
+    parallell_var_list.append(parallell_var)
+    parallell_time_list.append(end2-start2)
+
+    print("Iterations: {}".format(iterations))
+    print("N = {}".format(N))
+
+    print("Integral value: {}".format(parallell_int))
+    iterations +=1
+
+"""
+plt.plot(N_iteration_list[1:], integral_list[1:])
+plt.scatter(N_iteration_list, integral_list)
+plt.xlabel("Number of iterations N",fontsize=16)
+plt.ylabel("Integral values",fontsize=16)
+plt.title("Integral values for Exponential distribution",fontsize=16)
+plt.tight_layout()
+plt.savefig("exp_int.pdf")
+plt.close()
+
+
+plt.plot(N_iteration_list, parallell_int_list)
+plt.scatter(N_iteration_list, parallell_int_list)
+plt.xlabel("Number of iterations N",fontsize=16)
+plt.ylabel("Integral values",fontsize=16)
+plt.title("Integral values for Exponential distribution, parallell",fontsize=16)
+plt.tight_layout()
+plt.savefig("exp_int_parallell.pdf")
+plt.close()
+
+plt.plot(N_iteration_list, normal_time_list)
+plt.scatter(N_iteration_list, normal_time_list)
+plt.xlabel("Number of iterations N",fontsize=16)
+plt.ylabel("Time in seconds",fontsize=16)
+plt.title("Time to compute integral",fontsize=16)
+plt.tight_layout()
+plt.savefig("exp_time.pdf")
+plt.close()
+
+
+plt.plot(N_iteration_list, parallell_time_list)
+plt.scatter(N_iteration_list, parallell_time_list)
+plt.xlabel("Number of iterations N",fontsize=16)
+plt.ylabel("Time in seconds",fontsize=16)
+plt.title("Time to compute integral, parallell",fontsize=16)
+plt.tight_layout()
+plt.savefig("parallell_time.pdf")
+plt.close()
+
+
+
+plt.plot(N_iteration_list, variance_list)
+plt.scatter(N_iteration_list, variance_list)
+plt.xlabel("Number of iterations N",fontsize=16)
+plt.ylabel("Variance",fontsize=16)
+plt.title("Variance as a function of N",fontsize=16)
+plt.tight_layout()
+plt.savefig("variance.pdf")
+plt.close()
+
+
+
+plt.plot(N_iteration_list, parallell_var_list)
+plt.scatter(N_iteration_list, parallell_var_list)
+plt.xlabel("Number of iterations N",fontsize=16)
+plt.ylabel("Variance",fontsize=16)
+plt.title("Variance as a function of N, parallell",fontsize=16)
+plt.tight_layout()
+plt.savefig("parallell_variance.pdf")
+plt.close()
+"""
