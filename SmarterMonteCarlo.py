@@ -1,5 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import time
+
+t0 = time.time()
 
 def spherical_function(r1,r2,theta1,theta2,phi1,phi2,N):
     alpha=2
@@ -38,5 +41,7 @@ def MonteCarlo(N):
 
 integral=MonteCarlo(1099001)
 exact=(5*np.pi**2)/16**2
+t1 = time.time()
+print('Time spent {:.4}'.format(t1-t0))
 print("Computed integral: {:.3f}".format(integral))
 print("Exact Integral: {:.3f} ".format(exact))
