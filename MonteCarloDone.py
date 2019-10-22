@@ -1,6 +1,8 @@
 print('program begins')
 import numpy as np
 import matplotlib.pyplot as plt
+import multiprocessing as mp
+
 
 def function(x1,x2,y1,y2,z1,z2,N): #Definging the function to be integrated
     alpha=2
@@ -31,16 +33,18 @@ def MonteCarloNormal(N,lmbda):
     crude_mc = np.sum(fx)/N #summing
 
     integral=(crude_mc)*(b-a)**6 #accounting for 6 dimensions by multiplying with (b-a)^6
-
-#    standard_dev = np.sqrt(np.sum(func_values - mean_value)**2)/(N)
+    argument = (fx - np.mean(fx))**2
+    print(argument)
+    variance = np.sum( argument ) / N * (b-a)**6
 
 #    total_mean_value = np.sum(mean_value)
 #    total_standard_dev = np.sum(standard_dev)
 
-    return integral#,standard_dev
+    return integral, variance
 
-integral=MonteCarloNormal(10000001,2.8)
+integral,variance=MonteCarloNormal(1_00_00_00,2.8)
 
 print("Computed integral value: {}".format(integral))
+print("Variance: {}".format(variance))
 #print("Standard Deviation: {}" .format(standard_deviation))
 print("Actual integral value: {}".format(5*np.pi**2/16**2))
