@@ -42,25 +42,33 @@ def MonteCarlo(N):
 
     crude_mc = np.sum(fx)/N
 
+    argument = (fx - np.mean(fx))**2
+
+    variance = np.sum( argument ) /len(fx) * (4*np.pi**4/16)
+
     integral= crude_mc*(4*np.pi**4 )/16 #accomodating for 6D spherical
 
-    return integral
+    return integral, variance
 start=time.time()
-integral=MonteCarlo(100_00_00_0)
+integral,variance=MonteCarlo(1_00_00_00_0)
 end=time.time()
 exact=(5*np.pi**2)/16**2
 print("Computed integral: {:.3f}".format(integral))
-print("Time to compute integral: {}".format(end-start))
+print("Variance: {}".format(variance))
+print("Time to compute integral: {:.3f}".format(end-start))
 print("Exact Integral: {:.3f} ".format(exact))
 
-N=100_0
-N_list=np.full(100_00,N)
+N=1_00_0
+N_list=np.full(1_00_00,N)
+
 def main():
-    pool = mp.Pool(mp.cpu_count())
-    result = pool.map( MonteCarlo, N_list )
-#    print(np.array(result))
-    print("Integral calculated using parallelization: {:.3f}".format(np.mean(result)))
+    number_of_processors=mp.cpu_count()
+    pool = mp.Pool(number_of_processors)
+    result= np.array(pool.map( MonteCarlo, N_list ))
+    result_int,result_var=result.T
+    print("Integral calculated using parallelization: {:.3f}".format(np.mean(result_int)))
+    print("Variance calculated using parallelization: {}".format(np.mean(result_var)))
 start2=time.time()
 main()
 end2=time.time()
-print("Time to compute parallell integral: {}".format(end2-start2))
+print("Time to compute parallell integral: {:.3f}".format(end2-start2))
